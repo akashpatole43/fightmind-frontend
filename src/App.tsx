@@ -1,31 +1,23 @@
-import React from 'react';
+
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
 import { AuthLayout } from './components/layout/AuthLayout';
+import { AppLayout } from './components/layout/AppLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { OAuth2RedirectHandler } from './pages/auth/OAuth2RedirectHandler';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ProfilePage } from './pages/ProfilePage';
+import { ChatController } from './pages/chat/ChatController';
 import { useAuthStore } from './store/authStore';
-
-// Temporary placeholder for ChatLayout until Phase 3C & 3D
-const PlaceholderAppLayout = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen bg-[var(--color-dojo-dark)] font-sans">
-    <header className="h-16 border-b border-[var(--color-dojo-border)] glass-panel sticky top-0 z-50 flex items-center px-6">
-      <div className="text-xl font-black tracking-widest uppercase text-white">Fight<span className="text-[var(--color-neon-red)]">Mind</span></div>
-    </header>
-    <main>{children}</main>
-  </div>
-);
 
 function App() {
   const { isAuthenticated } = useAuthStore();
 
   return (
     <BrowserRouter>
-      {/* Global Toast Notifications (Glassmorphism theme) */}
+      {/* Global Toast Notifications */}
       <Toaster 
         theme="dark" 
         position="bottom-right"
@@ -52,15 +44,23 @@ function App() {
         {/* Invisible Route for Google Login */}
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
-        {/* Protected App Routes */}
+        {/* Protected App Routes with Global Layout */}
         <Route element={
           <ProtectedRoute>
-            <PlaceholderAppLayout><ProfilePage /></PlaceholderAppLayout>
+            <AppLayout />
           </ProtectedRoute>
         }>
-          {/* We will map layout properly in Phase 3C, temporarily aliasing /chat to Profile for testing */}
-          <Route path="/chat" element={null} />
-          <Route path="/profile" element={null} />
+          {/* Main App Screens */}
+          <Route path="/chat" element={<ChatController />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          
+          {/* Admin Routes (Stubbed for Phase 3E) */}
+          <Route path="/admin/users" element={
+            <div className="p-8 text-white">Admin: Users Dashboard under construction</div>
+          } />
+          <Route path="/admin/stats" element={
+            <div className="p-8 text-white">Admin: App Statistics under construction</div>
+          } />
         </Route>
         
       </Routes>
