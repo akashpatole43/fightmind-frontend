@@ -1,121 +1,71 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
+
+import { AuthLayout } from './components/layout/AuthLayout';
+import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
+import { OAuth2RedirectHandler } from './pages/auth/OAuth2RedirectHandler';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { ProfilePage } from './pages/ProfilePage';
+import { useAuthStore } from './store/authStore';
+
+// Temporary placeholder for ChatLayout until Phase 3C & 3D
+const PlaceholderAppLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen bg-[var(--color-dojo-dark)] font-sans">
+    <header className="h-16 border-b border-[var(--color-dojo-border)] glass-panel sticky top-0 z-50 flex items-center px-6">
+      <div className="text-xl font-black tracking-widest uppercase text-white">Fight<span className="text-[var(--color-neon-red)]">Mind</span></div>
+    </header>
+    <main>{children}</main>
+  </div>
+);
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { isAuthenticated } = useAuthStore();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter>
+      {/* Global Toast Notifications (Glassmorphism theme) */}
+      <Toaster 
+        theme="dark" 
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: 'rgba(26, 26, 31, 0.85)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid var(--color-dojo-border)',
+            color: 'white',
+          }
+        }}
+      />
+      
+      <Routes>
+        {/* Root Redirect */}
+        <Route path="/" element={<Navigate to={isAuthenticated ? "/chat" : "/login"} replace />} />
 
-      <div className="ticks"></div>
+        {/* Public Authentication Routes */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Route>
+        
+        {/* Invisible Route for Google Login */}
+        <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Protected App Routes */}
+        <Route element={
+          <ProtectedRoute>
+            <PlaceholderAppLayout><ProfilePage /></PlaceholderAppLayout>
+          </ProtectedRoute>
+        }>
+          {/* We will map layout properly in Phase 3C, temporarily aliasing /chat to Profile for testing */}
+          <Route path="/chat" element={null} />
+          <Route path="/profile" element={null} />
+        </Route>
+        
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
