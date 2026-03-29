@@ -6,7 +6,7 @@ import axios from 'axios';
  */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  timeout: 15000,
+  timeout: 60000, // 60 seconds to allow for AI generation processing time
 });
 
 // Request Interceptor: Attach JWT Token if it exists

@@ -83,9 +83,7 @@ export const ChatController = () => {
       }
 
       // 3. Send to Java Backend
-      const res = await api.post('/chat/send', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await api.post('/chat/send', formData);
 
       // 4. Append actual AI response to UI
       const aiResponseMsg: MessageProps = {

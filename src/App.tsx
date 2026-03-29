@@ -10,6 +10,8 @@ import { OAuth2RedirectHandler } from './pages/auth/OAuth2RedirectHandler';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ProfilePage } from './pages/ProfilePage';
 import { ChatController } from './pages/chat/ChatController';
+import { AdminStatsPage } from './pages/admin/AdminStatsPage';
+import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { useAuthStore } from './store/authStore';
 
 function App() {
@@ -54,13 +56,9 @@ function App() {
           <Route path="/chat" element={<ChatController />} />
           <Route path="/profile" element={<ProfilePage />} />
           
-          {/* Admin Routes (Stubbed for Phase 3E) */}
-          <Route path="/admin/users" element={
-            <div className="p-8 text-white">Admin: Users Dashboard under construction</div>
-          } />
-          <Route path="/admin/stats" element={
-            <div className="p-8 text-white">Admin: App Statistics under construction</div>
-          } />
+          {/* Admin Routes */}
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/stats" element={<AdminStatsPage />} />
         </Route>
         
       </Routes>
